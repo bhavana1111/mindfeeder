@@ -32,6 +32,8 @@ from schemas.agents import OrchestratorResult
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mindfeeder")
 
+WEBHOOK_SECRET = os.environ.get("WC_WEBHOOK_SECRET", "")
+
 
 def log(level: str, message: str, **kwargs):
     entry = {
@@ -191,62 +193,72 @@ async def list_events(limit: int = 50):
     }
 
 
+# @app.post("/webhook")
+# async def webhook(payload: WebhookPayload,request: Request):
+#     try:
+#         raw_body = await request.body()
+#         data = json.loads(raw_body)
+#         payload = WebhookPayload.model_validate(data)
+#     except Exception as exc:
+#         log("ERROR", "Payload parse failed", error=str(exc))
+#         raise HTTPException(status_code=422, detail=f"Invalid payload: {exc}")
+
+#     event_id = str(uuid.uuid4())
+
+#     log(
+#         "INFO",
+#         "Webhook received",
+#         event_id=event_id,
+#         source=payload.source,
+#         event_type=payload.event_type,
+#         order_id=payload.order.id,
+#         order_email=payload.order.email,
+#         order_total=payload.order.total,
+#     )
+
+#     await store_event(
+#         event_id,
+#         {
+#             "createdAt": datetime.now(timezone.utc).isoformat(),
+#             "source": payload.source,
+#             "eventType": payload.event_type,
+#             "status": "processing",
+#             "payload": payload.model_dump(),
+#             "orderId": payload.order.id,
+#             "orderEmail": payload.order.email,
+#         },
+#     )
+
+#     try:
+#         gcs_path = await upload_event_payload(event_id, raw_body.decode("utf-8"))
+#         log("INFO", "Payload uploaded to GCS", event_id=event_id, gcs_path=gcs_path)
+#     except Exception as exc:
+#         log("WARNING", "GCS upload failed — continuing without blob", event_id=event_id, error=str(exc))
+#         gcs_path = None
+
+#     result = await _run_pipeline(
+#         payload=payload.model_dump(),
+#         event_id=event_id,
+#         triggered_by="webhook",
+#     )
+
+#     return {
+#         "event_id": event_id,
+#         "status": "complete",
+#         "gcs_path": gcs_path,
+#         **result,
+#     }
+
 @app.post("/webhook")
-async def webhook(payload: WebhookPayload,request: Request):
+async def webhook(request: Request):
+    raw_body = await request.body()
     try:
-        raw_body = await request.body()
         data = json.loads(raw_body)
-        payload = WebhookPayload.model_validate(data)
-    except Exception as exc:
-        log("ERROR", "Payload parse failed", error=str(exc))
-        raise HTTPException(status_code=422, detail=f"Invalid payload: {exc}")
-
-    event_id = str(uuid.uuid4())
-
-    log(
-        "INFO",
-        "Webhook received",
-        event_id=event_id,
-        source=payload.source,
-        event_type=payload.event_type,
-        order_id=payload.order.id,
-        order_email=payload.order.email,
-        order_total=payload.order.total,
-    )
-
-    await store_event(
-        event_id,
-        {
-            "createdAt": datetime.now(timezone.utc).isoformat(),
-            "source": payload.source,
-            "eventType": payload.event_type,
-            "status": "processing",
-            "payload": payload.model_dump(),
-            "orderId": payload.order.id,
-            "orderEmail": payload.order.email,
-        },
-    )
-
-    try:
-        gcs_path = await upload_event_payload(event_id, raw_body.decode("utf-8"))
-        log("INFO", "Payload uploaded to GCS", event_id=event_id, gcs_path=gcs_path)
-    except Exception as exc:
-        log("WARNING", "GCS upload failed — continuing without blob", event_id=event_id, error=str(exc))
-        gcs_path = None
-
-    result = await _run_pipeline(
-        payload=payload.model_dump(),
-        event_id=event_id,
-        triggered_by="webhook",
-    )
-
-    return {
-        "event_id": event_id,
-        "status": "complete",
-        "gcs_path": gcs_path,
-        **result,
-    }
-
+    except:
+        data = raw_body.decode("utf-8")
+    
+    log("INFO", "Raw webhook payload", data=data)
+    return {"status": "ok"}
 
 @app.get("/events/{event_id}")
 async def get_event_detail(
