@@ -153,7 +153,18 @@ async def list_events(limit: int = 50) -> list[dict]:
         results.append({"id": doc.id, **doc.to_dict()})
 
     return results
-
+async def get_events(limit: int = 50) -> list[dict]:
+    """
+    Fetches all event documents ordered by createdAt descending.
+    Returns lightweight summaries (no payload body).
+    """
+    db  = _get_db()
+    query = (
+        db.collection("events")
+        .order_by("createdAt", direction="DESCENDING")
+        .limit(limit)
+    )
+    return [doc.id async for doc in query.stream()]
 
 # ---------------------------------------------------------------------------
 # Agent outputs (subcollection)

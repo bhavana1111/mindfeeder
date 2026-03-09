@@ -21,6 +21,7 @@ from clients.firestore_client import (
     store_audit_log_entry,
     store_event,
     get_event,
+    get_events,
     get_event_outputs,
     store_event_output,
 )
@@ -161,6 +162,32 @@ async def health():
     return {
         "status": "ok",
         "ts": datetime.now(timezone.utc).isoformat(),
+    }
+
+@app.get("/events")
+async def list_events(limit: int = 50):
+    """
+    Returns a list of all events ordered by createdAt descending.
+
+    Response shape:
+    {
+        "events": [
+            { "id", "status", "orderId", "orderEmail", "source", "eventType", "createdAt" },
+            ...
+        ],
+        "count": 12
+    }
+
+    Query params:
+        limit  – max events to return (default 50)
+    """
+    event_ids = await get_events(limit=limit)
+
+    log("INFO", "Events listed", count=len(event_ids))
+
+    return {
+        "events": event_ids,
+        "count": len(event_ids),
     }
 
 
