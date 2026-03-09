@@ -64,7 +64,7 @@ logger = logging.getLogger("mindfeeder.bq_client")
 # Config
 # ---------------------------------------------------------------------------
 
-BQ_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "")
+BQ_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "mindfeeder-sim-bhavanakon-4214")
 BQ_DATASET = os.environ.get("BQ_DATASET", "mf_usage")
 BQ_TABLE   = os.environ.get("BQ_TABLE", "usage_ledger")
 
