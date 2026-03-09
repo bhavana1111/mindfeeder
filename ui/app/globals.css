@@ -1,26 +1,50 @@
-@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-mono: "IBM Plex Mono", monospace;
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #080b0f;
+  color: #c8d8e8;
+  font-family: var(--font-mono), monospace;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2a36;
+  border-radius: 3px;
+}
+
+pre .k {
+  color: #38bdf8;
+}
+pre .s {
+  color: #86efac;
+}
+pre .n {
+  color: #fbbf24;
+}
+pre .b {
+  color: #c084fc;
+}
+pre .z {
+  color: #6b7280;
+}
+
+.event-row {
+  transition: background 0.1s;
+}
+.event-row:hover {
+  background: rgba(240, 165, 0, 0.04);
 }

@@ -1,7 +1,14 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
     args:
-      ["build", "-t", "gcr.io/$PROJECT_ID/mindfeeder-ui:$COMMIT_SHA", "./ui"]
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/mindfeeder-ui:$COMMIT_SHA",
+        "-f",
+        "ui/Dockerfile",
+        "./ui",
+      ]
 
   - name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/mindfeeder-ui:$COMMIT_SHA"]
