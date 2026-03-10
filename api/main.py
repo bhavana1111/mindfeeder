@@ -371,3 +371,6 @@ async def get_event_detail(event_id: str):
         "outputs":   outputs,
         "audit_log": audit_log,
     }
+
+
+    
